@@ -1,0 +1,15 @@
+VirSorter main output columns:
+
+Column:												Content:
+Contig_id											Name of contigs from input fasta file. Has the prefix "VIRsorter_"
+Nb.genes.contigs									Number of genes on contig
+Fragment											Name of fragments where putative prophages were found. Same as "Contig_id" but with suffix of gene range "-gene_XXX-gene_XXX"
+Nb.genes											Number of genes present on gene fragment
+Category											Value (1-3) that shows confidence of prediction. 1 = "pretty sure", 2 = "quite sure", 3 = "not so sure"
+Nb.phage.hallmark.genes								Number of hallmark viral genes
+Phage.gene.enrichment.sig							Significance score of viral gene enrichment. Has a prefix showing location of enrichment, similar to the suffix of "Fragment".
+Non.Caudovirales.phage.gene.enrichment.sig			Significance score of non-caudovirales gene enrichment. Has a prefix showing location of enrichment, similar to the suffix of "Fragment".
+Pfam.depletion.sig									Significance score of pfam depletion enrichment. Has a prefix showing location of enrichment, similar to the suffix of "Fragment".
+Uncharacterized.enrichment.sig						Significance score of uncharacterized gene gene enrichment. Has a prefix showing location of enrichment, similar to the suffix of "Fragment".
+Strand.switch.depletion.sig							Significance score of strand switch depletion enrichment. Has a prefix showing location of enrichment, similar to the suffix of "Fragment".
+Short.genes.enrichment.sig							Significance score of short gene enrichment. Has a prefix showing location of enrichment, similar to the suffix of "Fragment".

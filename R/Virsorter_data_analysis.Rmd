@@ -1,0 +1,147 @@
+---
+title: "RefSeq data analysis"
+author: "Matt Tuttle"
+date: "May 22, 2017"
+output:
+  html_document:
+    keep_md: TRUE
+  html_notebook: default
+---
+
+```{r, include = FALSE}
+
+library(tidyverse)
+
+```
+
+## Data information
+
+This document analyzes output data from a VirSorter analyses on marine bacterial genomes. 1778 genomes specified as belonging to a marine ecosystem type on JGI's IMG/M database were downloaded from JGI on May 15, 2017. These genomes comprise completed as well as permanent draft, draft, and single-cell amplified genomes. These genomes were then analyzed using VIRSorter version 1.0.3 in Cyverse's Discovery Environment. The analysis was performed twice, once using VirSorter's innate RefSeq database and a second time using the Viromes database.
+
+One note to make regarding this dataset is that despite inclusion of whole as well as draft genomes, this dataset is apt to underestimate/underrepresent all of the bacterial diversity found within the ocean. This is due to the fact that not all genomes in the IMG/M database have complete metadata associated with the genome. For instance, our organism Sulfitobacter sp. CB2047 does not have an ecosystem type or habitat listed.
+
+#### A note
+
+A different dataset was originally run through VIRSorter that downloaded bacterial genomes based on habitats that stated that they were marine in nature. This dataset is not being used for further analysis due to the fact that subsequent viewing of the metadata for the genomes revealed that genomes from other aquatic environments were also somehow downloaded. These genomes were originally downloaded on April 28, 2017.
+
+## Generation of metadata datatables
+
+This code generates two datatables:
+1. Metadata relating to genomes used in the Virsorter analyses
+2. Metadata relating to scaffolds used in the Virsorter analyses
+
+```{r}
+
+# Imports genome metadata
+# Only imports columns thought to be important for downstream analysis
+genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
+    select(Taxon.oid = taxon_oid,
+           Domain,
+           Status,
+           Genome.Name = Genome.Name...Sample.Name,
+           IMG.Genome.ID,
+           Phylum,
+           Class,
+           Order,
+           Family,
+           Genus,
+           Species,
+           NCBI.Taxon.ID,
+           Strain, Cultured,
+           Ecosystem,
+           Ecosystem.Category,
+           Ecosystem.Type,
+           Ecosystem.Subtype,
+           Genome.Size = Genome.Size.....assembled,
+           Gene.Count = Gene.Count.....assembled,
+           Scaffold.Count = Scaffold.Count.....assembled
+           )
+
+# Writes the curated genome metadata to the tables folder
+write.csv(genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
+
+# Imports scaffold metadata
+# Selects only data deemed of importance
+scaffold_data <- read.csv("../data/test_scaffold_list.csv", header = TRUE) %>%
+  select(Scaffold.ID,
+         Scaffold.Name,
+         Genome.ID,
+         Genome,
+         Gene.Count,
+         Sequence.Length.bp = Sequence.Length..bp.,
+         GC.Content
+         )
+
+# Writes the curated scaffold metadata to the tables folder
+write.csv(genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
+
+```
+
+## Import of VirSorter output data
+
+```{r}
+
+# Imports VirSorter data output when using the RefSeq database
+refseq_data <- read.csv("../data/Refseq_data.csv", header = TRUE)
+
+# Imports VirSorter data output when using the Viromes database
+viromes_data <- read.csv("../data/Viromes_data.csv", header = TRUE)
+
+```
+
+## Prophage detection by contig (or by prophage)
+
+```{r}
+
+# Makes changes to VirSorter output datatable to give more information about found prophages
+refseq_with_ID <- refseq_data %>%
+ 
+  # Adds IMG.Genome.ID column to datatable by extracting it from the scaffold ID
+  # Will allow this data to be combined with metadata
+  # Removes prefix
+  mutate(IMG.Genome.ID = gsub("VIRSorter_", "", Contig_id)) %>%
+  # Removes suffix
+  mutate(IMG.Genome.ID = gsub("\\_.*", "", IMG.Genome.ID)) %>%
+  
+  # Removes prefix from Contig_id
+  mutate(Contig_id = gsub("VIRSorter_", "", Contig_id)) %>%
+  
+  # Removes prefix from Fragment
+  mutate(Fragment = gsub("VIRSorter_", "", Fragment))
+  
+  # Calculates the length of each predicted prophages
+  
+  # Combines VirSorter data with scaffold metadata
+  
+  # Orders columns in the datatable
+  
+  # Writes the datatable to the tables folder
+  
+
+
+
+
+# Calculates average length of prophage per genome
+# Calculates average length of prophage per species
+# Calculates number of prophage per genome
+# Calculates average number of prophage per species
+# 
+
+# May need to calculate the averages into columns that can later be used to easily collapse down the data
+# May want to create a new column that can be used to pick out or "group_by()" species easily for performing different calculations
+
+```
+
+## Prophage detection by genome
+
+```{r}
+
+# Makes calculation for looking at prophage data at the genome level
+
+# Combines VirSorter data with metadata from IMG
+
+```
+
+
+
+## Prophage detection by species

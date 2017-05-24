@@ -46,7 +46,7 @@ genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
            Gene.Count = Gene.Count.....assembled,
            Scaffold.Count = Scaffold.Count.....assembled
            )
-
+  
 # Writes the curated genome metadata to the tables folder
 write.csv(genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
 
@@ -61,9 +61,9 @@ scaffold_data <- read.csv("../data/test_scaffold_list.csv", header = TRUE) %>%
          Sequence.Length.bp = Sequence.Length..bp.,
          GC.Content
          )
-
+  
 # Writes the curated scaffold metadata to the tables folder
-write.csv(genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
+write.csv(scaffold_data, file = "../tables/formatted_scaffold_list.csv", row.names = FALSE)
 ```
 
 ## Import of VirSorter output data
@@ -82,7 +82,7 @@ viromes_data <- read.csv("../data/Viromes_data.csv", header = TRUE)
 
 ```r
 # Makes changes to VirSorter output datatable to give more information about found prophages
-refseq_with_ID <- refseq_data %>%
+refseq_by_prophage <- refseq_data %>%
  
   # Adds IMG.Genome.ID column to datatable by extracting it from the scaffold ID
   # Will allow this data to be combined with metadata
@@ -97,16 +97,12 @@ refseq_with_ID <- refseq_data %>%
   # Removes prefix from Fragment
   mutate(Fragment = gsub("VIRSorter_", "", Fragment))
   
-  # Calculates the length of each predicted prophages
-  
   # Combines VirSorter data with scaffold metadata
   
   # Orders columns in the datatable
   
-  # Writes the datatable to the tables folder
-  
-
-
+# Writes the datatable to the tables folder
+write.csv(refseq_by_prophage, file = "../tables/refseq_by_prophage.csv", row.names = FALSE)
 
 
 # Calculates average length of prophage per genome

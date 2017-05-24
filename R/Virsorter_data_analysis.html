@@ -160,7 +160,7 @@ genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %
            Gene.Count = Gene.Count.....assembled,
            Scaffold.Count = Scaffold.Count.....assembled
            )
-
+  
 # Writes the curated genome metadata to the tables folder
 write.csv(genome_data, file = &quot;../tables/formatted_genome_list.csv&quot;, row.names = FALSE)
 
@@ -175,9 +175,9 @@ scaffold_data &lt;- read.csv(&quot;../data/test_scaffold_list.csv&quot;, header 
          Sequence.Length.bp = Sequence.Length..bp.,
          GC.Content
          )
-
+  
 # Writes the curated scaffold metadata to the tables folder
-write.csv(genome_data, file = &quot;../tables/formatted_genome_list.csv&quot;, row.names = FALSE)</code></pre>
+write.csv(scaffold_data, file = &quot;../tables/formatted_scaffold_list.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 <div id="import-of-virsorter-output-data" class="section level2">
 <h2>Import of VirSorter output data</h2>
@@ -190,7 +190,7 @@ viromes_data &lt;- read.csv(&quot;../data/Viromes_data.csv&quot;, header = TRUE)
 <div id="prophage-detection-by-contig-or-by-prophage" class="section level2">
 <h2>Prophage detection by contig (or by prophage)</h2>
 <pre class="r"><code># Makes changes to VirSorter output datatable to give more information about found prophages
-refseq_with_ID &lt;- refseq_data %&gt;%
+refseq_by_prophage &lt;- refseq_data %&gt;%
  
   # Adds IMG.Genome.ID column to datatable by extracting it from the scaffold ID
   # Will allow this data to be combined with metadata
@@ -205,16 +205,12 @@ refseq_with_ID &lt;- refseq_data %&gt;%
   # Removes prefix from Fragment
   mutate(Fragment = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Fragment))
   
-  # Calculates the length of each predicted prophages
-  
   # Combines VirSorter data with scaffold metadata
   
   # Orders columns in the datatable
   
-  # Writes the datatable to the tables folder
-  
-
-
+# Writes the datatable to the tables folder
+write.csv(refseq_by_prophage, file = &quot;../tables/refseq_by_prophage.csv&quot;, row.names = FALSE)
 
 
 # Calculates average length of prophage per genome

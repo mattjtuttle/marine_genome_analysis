@@ -70,10 +70,60 @@ viromes_data <- read.csv("../data/Viromes_data.csv", header = TRUE)
 
 ## Detection of prophages
 
+For RefSeq data:
+
 
 ```r
 # Makes changes to VirSorter output datatable to give more information about found prophages
 refseq_by_prophage <- refseq_data %>%
+ 
+  # Removes prefix from Contig_id
+  mutate(Contig_id = gsub("VIRSorter_", "", Contig_id)) %>%
+  
+  # Adds Scaffold.ID column to datatable by extracting it from the scaffold ID
+  # Removing suffix and making string numeric allows this data to be combined with metadata
+  mutate(Scaffold.ID = gsub("\\_.*", "", Contig_id)) %>%
+  mutate(Scaffold.ID = as.numeric(Scaffold.ID)) %>%
+  
+  # Removes prefix from Fragment
+  mutate(Fragment = gsub("VIRSorter_", "", Fragment)) %>%
+  
+  # Converts NAs in Nb.phage.hallmark.genes to zero
+  mutate(Nb.phage.hallmark.genes = ifelse(is.na(Nb.phage.hallmark.genes), 0, Nb.phage.hallmark.genes)) %>%
+
+  # Combines scaffold metadata with VirSorter output
+  inner_join(scaffold_data, by = "Scaffold.ID") %>%
+  
+  # Calculates the number of prophages per scaffold
+  mutate(Prophages.per.scaffold = 1) %>%
+  group_by(Scaffold.ID) %>%
+  mutate(Prophages.per.scaffold = sum(Prophages.per.scaffold)) %>%
+  ungroup() %>%
+  
+  # Calculates the number of prophages per genome
+  mutate(Prophages.per.genome = 1) %>%
+  group_by(Genome.ID) %>%
+  mutate(Prophages.per.genome = sum(Prophages.per.genome)) %>%
+  ungroup()
+
+
+# Calculates the total number of genomes found to contan at least 1 prophage
+genomes_with_prophage <- distinct(refseq_by_prophage, Genome.ID) %>%
+  nrow()
+  
+  # Selects and orders columns in the datatable
+  # To be inserted later on
+  
+# Writes the datatable to the tables folder
+write.csv(refseq_by_prophage, file = "../tables/refseq_by_prophage.csv", row.names = FALSE)
+```
+
+For Viromes data:
+
+
+```r
+# Makes changes to VirSorter output datatable to give more information about found prophages
+viromes_by_prophage <- viromes_data %>%
  
   # Removes prefix from Contig_id
   mutate(Contig_id = gsub("VIRSorter_", "", Contig_id)) %>%
@@ -108,8 +158,9 @@ refseq_by_prophage <- refseq_data %>%
   # To be inserted later on
   
 # Writes the datatable to the tables folder
-write.csv(refseq_by_prophage, file = "../tables/refseq_by_prophage.csv", row.names = FALSE)
+write.csv(viromes_by_prophage, file = "../tables/viromes_by_prophage.csv", row.names = FALSE)
 ```
+
 
 ## Prophage detection by genome
 

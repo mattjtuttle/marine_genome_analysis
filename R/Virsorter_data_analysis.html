@@ -180,8 +180,52 @@ viromes_data &lt;- read.csv(&quot;../data/Viromes_data.csv&quot;, header = TRUE)
 </div>
 <div id="detection-of-prophages" class="section level2">
 <h2>Detection of prophages</h2>
+<p>For RefSeq data:</p>
 <pre class="r"><code># Makes changes to VirSorter output datatable to give more information about found prophages
 refseq_by_prophage &lt;- refseq_data %&gt;%
+ 
+  # Removes prefix from Contig_id
+  mutate(Contig_id = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Contig_id)) %&gt;%
+  
+  # Adds Scaffold.ID column to datatable by extracting it from the scaffold ID
+  # Removing suffix and making string numeric allows this data to be combined with metadata
+  mutate(Scaffold.ID = gsub(&quot;\\_.*&quot;, &quot;&quot;, Contig_id)) %&gt;%
+  mutate(Scaffold.ID = as.numeric(Scaffold.ID)) %&gt;%
+  
+  # Removes prefix from Fragment
+  mutate(Fragment = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Fragment)) %&gt;%
+  
+  # Converts NAs in Nb.phage.hallmark.genes to zero
+  mutate(Nb.phage.hallmark.genes = ifelse(is.na(Nb.phage.hallmark.genes), 0, Nb.phage.hallmark.genes)) %&gt;%
+
+  # Combines scaffold metadata with VirSorter output
+  inner_join(scaffold_data, by = &quot;Scaffold.ID&quot;) %&gt;%
+  
+  # Calculates the number of prophages per scaffold
+  mutate(Prophages.per.scaffold = 1) %&gt;%
+  group_by(Scaffold.ID) %&gt;%
+  mutate(Prophages.per.scaffold = sum(Prophages.per.scaffold)) %&gt;%
+  ungroup() %&gt;%
+  
+  # Calculates the number of prophages per genome
+  mutate(Prophages.per.genome = 1) %&gt;%
+  group_by(Genome.ID) %&gt;%
+  mutate(Prophages.per.genome = sum(Prophages.per.genome)) %&gt;%
+  ungroup()
+
+
+# Calculates the total number of genomes found to contan at least 1 prophage
+genomes_with_prophage &lt;- distinct(refseq_by_prophage, Genome.ID) %&gt;%
+  nrow()
+  
+  # Selects and orders columns in the datatable
+  # To be inserted later on
+  
+# Writes the datatable to the tables folder
+write.csv(refseq_by_prophage, file = &quot;../tables/refseq_by_prophage.csv&quot;, row.names = FALSE)</code></pre>
+<p>For Viromes data:</p>
+<pre class="r"><code># Makes changes to VirSorter output datatable to give more information about found prophages
+viromes_by_prophage &lt;- viromes_data %&gt;%
  
   # Removes prefix from Contig_id
   mutate(Contig_id = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Contig_id)) %&gt;%
@@ -216,7 +260,7 @@ refseq_by_prophage &lt;- refseq_data %&gt;%
   # To be inserted later on
   
 # Writes the datatable to the tables folder
-write.csv(refseq_by_prophage, file = &quot;../tables/refseq_by_prophage.csv&quot;, row.names = FALSE)</code></pre>
+write.csv(viromes_by_prophage, file = &quot;../tables/viromes_by_prophage.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 <div id="prophage-detection-by-genome" class="section level2">
 <h2>Prophage detection by genome</h2>

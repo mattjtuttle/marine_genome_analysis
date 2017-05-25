@@ -51,16 +51,7 @@ genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
 write.csv(genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
 
 # Imports scaffold metadata
-# Selects only data deemed of importance
-scaffold_data <- read.csv("../data/test_scaffold_list.csv", header = TRUE) %>%
-  select(Scaffold.ID,
-         Scaffold.Name,
-         Genome.ID,
-         Genome,
-         Gene.Count,
-         Sequence.Length.bp = Sequence.Length..bp.,
-         GC.Content
-         )
+scaffold_data <- read.csv("../data/scaffold_list.csv", header = TRUE)
   
 # Writes the curated scaffold metadata to the tables folder
 write.csv(scaffold_data, file = "../tables/formatted_scaffold_list.csv", row.names = FALSE)

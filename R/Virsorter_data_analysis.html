@@ -165,16 +165,7 @@ genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %
 write.csv(genome_data, file = &quot;../tables/formatted_genome_list.csv&quot;, row.names = FALSE)
 
 # Imports scaffold metadata
-# Selects only data deemed of importance
-scaffold_data &lt;- read.csv(&quot;../data/test_scaffold_list.csv&quot;, header = TRUE) %&gt;%
-  select(Scaffold.ID,
-         Scaffold.Name,
-         Genome.ID,
-         Genome,
-         Gene.Count,
-         Sequence.Length.bp = Sequence.Length..bp.,
-         GC.Content
-         )
+scaffold_data &lt;- read.csv(&quot;../data/scaffold_list.csv&quot;, header = TRUE)
   
 # Writes the curated scaffold metadata to the tables folder
 write.csv(scaffold_data, file = &quot;../tables/formatted_scaffold_list.csv&quot;, row.names = FALSE)</code></pre>

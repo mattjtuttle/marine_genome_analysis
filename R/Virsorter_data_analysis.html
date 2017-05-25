@@ -198,7 +198,19 @@ refseq_by_prophage &lt;- refseq_data %&gt;%
   mutate(Nb.phage.hallmark.genes = ifelse(is.na(Nb.phage.hallmark.genes), 0, Nb.phage.hallmark.genes)) %&gt;%
 
   # Combines scaffold metadata with VirSorter output
-  inner_join(scaffold_data, by = &quot;Scaffold.ID&quot;)
+  inner_join(scaffold_data, by = &quot;Scaffold.ID&quot;) %&gt;%
+  
+  # Calculates the number of prophages per scaffold
+  mutate(Prophages.per.scaffold = 1) %&gt;%
+  group_by(Scaffold.ID) %&gt;%
+  mutate(Prophages.per.scaffold = sum(Prophages.per.scaffold)) %&gt;%
+  ungroup() %&gt;%
+  
+  # Calculates the number of prophages per genome
+  mutate(Prophages.per.genome = 1) %&gt;%
+  group_by(Genome.ID) %&gt;%
+  mutate(Prophages.per.genome = sum(Prophages.per.genome)) %&gt;%
+  ungroup()
   
   # Selects and orders columns in the datatable
   # To be inserted later on
@@ -208,11 +220,7 @@ write.csv(refseq_by_prophage, file = &quot;../tables/refseq_by_prophage.csv&quot
 </div>
 <div id="prophage-detection-by-genome" class="section level2">
 <h2>Prophage detection by genome</h2>
-<pre class="r"><code># Calculates the number of prophages per scaffold
-
-# Calculates the number of prophages per genome
-
-# Reduces scaffolds down to the genome
+<pre class="r"><code># Reduces scaffolds down to the genome
 # Selects only columns of interest
 
 # Combines genomic level prophage data with genome metadata

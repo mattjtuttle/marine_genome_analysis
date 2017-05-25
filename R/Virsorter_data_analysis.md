@@ -90,7 +90,19 @@ refseq_by_prophage <- refseq_data %>%
   mutate(Nb.phage.hallmark.genes = ifelse(is.na(Nb.phage.hallmark.genes), 0, Nb.phage.hallmark.genes)) %>%
 
   # Combines scaffold metadata with VirSorter output
-  inner_join(scaffold_data, by = "Scaffold.ID")
+  inner_join(scaffold_data, by = "Scaffold.ID") %>%
+  
+  # Calculates the number of prophages per scaffold
+  mutate(Prophages.per.scaffold = 1) %>%
+  group_by(Scaffold.ID) %>%
+  mutate(Prophages.per.scaffold = sum(Prophages.per.scaffold)) %>%
+  ungroup() %>%
+  
+  # Calculates the number of prophages per genome
+  mutate(Prophages.per.genome = 1) %>%
+  group_by(Genome.ID) %>%
+  mutate(Prophages.per.genome = sum(Prophages.per.genome)) %>%
+  ungroup()
   
   # Selects and orders columns in the datatable
   # To be inserted later on
@@ -103,10 +115,6 @@ write.csv(refseq_by_prophage, file = "../tables/refseq_by_prophage.csv", row.nam
 
 
 ```r
-# Calculates the number of prophages per scaffold
-
-# Calculates the number of prophages per genome
-
 # Reduces scaffolds down to the genome
 # Selects only columns of interest
 

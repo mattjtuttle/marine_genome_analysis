@@ -87,12 +87,12 @@ viromes_data <- read.csv("../data/Viromes_data.csv", header = TRUE)
 # Makes changes to VirSorter output datatable to give more information about found prophages
 refseq_by_prophage <- refseq_data %>%
  
-  # Adds IMG.Genome.ID column to datatable by extracting it from the scaffold ID
+  # Adds IMG.Scaffold.ID column to datatable by extracting it from the scaffold ID
   # Will allow this data to be combined with metadata
   # Removes prefix
-  mutate(IMG.Genome.ID = gsub("VIRSorter_", "", Contig_id)) %>%
+  mutate(IMG.Scaffold.ID = gsub("VIRSorter_", "", Contig_id)) %>%
   # Removes suffix
-  mutate(IMG.Genome.ID = gsub("\\_.*", "", IMG.Genome.ID)) %>%
+  mutate(IMG.Scaffold.ID = gsub("\\_.*", "", IMG.Scaffold.ID)) %>%
   
   # Removes prefix from Contig_id
   mutate(Contig_id = gsub("VIRSorter_", "", Contig_id)) %>%

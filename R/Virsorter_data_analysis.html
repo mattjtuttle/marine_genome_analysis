@@ -178,46 +178,51 @@ refseq_data &lt;- read.csv(&quot;../data/Refseq_data.csv&quot;, header = TRUE)
 # Imports VirSorter data output when using the Viromes database
 viromes_data &lt;- read.csv(&quot;../data/Viromes_data.csv&quot;, header = TRUE)</code></pre>
 </div>
-<div id="prophage-detection-by-contig-or-by-prophage" class="section level2">
-<h2>Prophage detection by contig (or by prophage)</h2>
+<div id="detection-of-prophages" class="section level2">
+<h2>Detection of prophages</h2>
 <pre class="r"><code># Makes changes to VirSorter output datatable to give more information about found prophages
 refseq_by_prophage &lt;- refseq_data %&gt;%
  
-  # Adds IMG.Genome.ID column to datatable by extracting it from the scaffold ID
-  # Will allow this data to be combined with metadata
-  # Removes prefix
-  mutate(IMG.Genome.ID = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Contig_id)) %&gt;%
-  # Removes suffix
-  mutate(IMG.Genome.ID = gsub(&quot;\\_.*&quot;, &quot;&quot;, IMG.Genome.ID)) %&gt;%
-  
   # Removes prefix from Contig_id
   mutate(Contig_id = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Contig_id)) %&gt;%
   
+  # Adds Scaffold.ID column to datatable by extracting it from the scaffold ID
+  # Removing suffix and making string numeric allows this data to be combined with metadata
+  mutate(Scaffold.ID = gsub(&quot;\\_.*&quot;, &quot;&quot;, Contig_id)) %&gt;%
+  mutate(Scaffold.ID = as.numeric(Scaffold.ID)) %&gt;%
+  
   # Removes prefix from Fragment
-  mutate(Fragment = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Fragment))
+  mutate(Fragment = gsub(&quot;VIRSorter_&quot;, &quot;&quot;, Fragment)) %&gt;%
   
-  # Combines VirSorter data with scaffold metadata
+  # Converts NAs in Nb.phage.hallmark.genes to zero
+  mutate(Nb.phage.hallmark.genes = ifelse(is.na(Nb.phage.hallmark.genes), 0, Nb.phage.hallmark.genes)) %&gt;%
+
+  # Combines scaffold metadata with VirSorter output
+  inner_join(scaffold_data, by = &quot;Scaffold.ID&quot;)
   
-  # Orders columns in the datatable
+  # Selects and orders columns in the datatable
+  # To be inserted later on
   
 # Writes the datatable to the tables folder
-write.csv(refseq_by_prophage, file = &quot;../tables/refseq_by_prophage.csv&quot;, row.names = FALSE)
-
-
-# Calculates average length of prophage per genome
-# Calculates average length of prophage per species
-# Calculates number of prophage per genome
-# Calculates average number of prophage per species
-# 
-
-# May need to calculate the averages into columns that can later be used to easily collapse down the data
-# May want to create a new column that can be used to pick out or &quot;group_by()&quot; species easily for performing different calculations</code></pre>
+write.csv(refseq_by_prophage, file = &quot;../tables/refseq_by_prophage.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 <div id="prophage-detection-by-genome" class="section level2">
 <h2>Prophage detection by genome</h2>
-<pre class="r"><code># Makes calculation for looking at prophage data at the genome level
+<pre class="r"><code># Calculates the number of prophages per scaffold
 
-# Combines VirSorter data with metadata from IMG</code></pre>
+# Calculates the number of prophages per genome
+
+# Reduces scaffolds down to the genome
+# Selects only columns of interest
+
+# Combines genomic level prophage data with genome metadata
+
+# Calculates the number of prophages per species
+
+
+
+# May need to calculate the averages into columns that can later be used to easily collapse down the data
+# May want to create a new column that can be used to pick out or &quot;group_by()&quot; species easily for performing different calculations</code></pre>
 </div>
 <div id="prophage-detection-by-species" class="section level2">
 <h2>Prophage detection by species</h2>

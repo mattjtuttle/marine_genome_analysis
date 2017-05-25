@@ -68,53 +68,75 @@ refseq_data <- read.csv("../data/Refseq_data.csv", header = TRUE)
 viromes_data <- read.csv("../data/Viromes_data.csv", header = TRUE)
 ```
 
-## Prophage detection by contig (or by prophage)
+## Detection of prophages
 
 
 ```r
 # Makes changes to VirSorter output datatable to give more information about found prophages
 refseq_by_prophage <- refseq_data %>%
  
-  # Adds IMG.Genome.ID column to datatable by extracting it from the scaffold ID
-  # Will allow this data to be combined with metadata
-  # Removes prefix
-  mutate(IMG.Genome.ID = gsub("VIRSorter_", "", Contig_id)) %>%
-  # Removes suffix
-  mutate(IMG.Genome.ID = gsub("\\_.*", "", IMG.Genome.ID)) %>%
-  
   # Removes prefix from Contig_id
   mutate(Contig_id = gsub("VIRSorter_", "", Contig_id)) %>%
   
+  # Adds Scaffold.ID column to datatable by extracting it from the scaffold ID
+  # Removing suffix and making string numeric allows this data to be combined with metadata
+  mutate(Scaffold.ID = gsub("\\_.*", "", Contig_id)) %>%
+  mutate(Scaffold.ID = as.numeric(Scaffold.ID)) %>%
+  
   # Removes prefix from Fragment
-  mutate(Fragment = gsub("VIRSorter_", "", Fragment))
+  mutate(Fragment = gsub("VIRSorter_", "", Fragment)) %>%
   
-  # Combines VirSorter data with scaffold metadata
+  # Converts NAs in Nb.phage.hallmark.genes to zero
+  mutate(Nb.phage.hallmark.genes = ifelse(is.na(Nb.phage.hallmark.genes), 0, Nb.phage.hallmark.genes)) %>%
+
+  # Combines scaffold metadata with VirSorter output
+  inner_join(scaffold_data, by = "Scaffold.ID")
   
-  # Orders columns in the datatable
+  # Selects and orders columns in the datatable
+  # To be inserted later on
   
 # Writes the datatable to the tables folder
 write.csv(refseq_by_prophage, file = "../tables/refseq_by_prophage.csv", row.names = FALSE)
-
-
-# Calculates average length of prophage per genome
-# Calculates average length of prophage per species
-# Calculates number of prophage per genome
-# Calculates average number of prophage per species
-# 
-
-# May need to calculate the averages into columns that can later be used to easily collapse down the data
-# May want to create a new column that can be used to pick out or "group_by()" species easily for performing different calculations
 ```
 
 ## Prophage detection by genome
 
 
 ```r
-# Makes calculation for looking at prophage data at the genome level
+# Calculates the number of prophages per scaffold
 
-# Combines VirSorter data with metadata from IMG
+# Calculates the number of prophages per genome
+
+# Reduces scaffolds down to the genome
+# Selects only columns of interest
+
+# Combines genomic level prophage data with genome metadata
+
+# Calculates the number of prophages per species
+
+
+
+# May need to calculate the averages into columns that can later be used to easily collapse down the data
+# May want to create a new column that can be used to pick out or "group_by()" species easily for performing different calculations
 ```
 
 
 
 ## Prophage detection by species
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

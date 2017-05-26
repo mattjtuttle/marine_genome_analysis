@@ -166,6 +166,10 @@ write.csv(viromes_by_prophage, file = "../tables/viromes_by_prophage.csv", row.n
 
 
 ```r
+# Determine new columns, compress, and make plots of stuff at the genome level
+
+
+
 # Reduces scaffolds down to the genome
 # Selects only columns of interest
 
@@ -180,22 +184,9 @@ write.csv(viromes_by_prophage, file = "../tables/viromes_by_prophage.csv", row.n
 ```
 
 
-
 ## Prophage detection by species
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+## Plots distribution of taxa
 

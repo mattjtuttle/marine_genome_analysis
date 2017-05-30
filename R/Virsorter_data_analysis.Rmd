@@ -24,7 +24,7 @@ One note to make regarding this dataset is that despite inclusion of whole as we
 
 A different dataset was originally run through VIRSorter that downloaded bacterial genomes based on habitats that stated that they were marine in nature. This dataset is not being used for further analysis due to the fact that subsequent viewing of the metadata for the genomes revealed that genomes from other aquatic environments were also somehow downloaded. These genomes were originally downloaded on April 28, 2017.
 
-## Generation of metadata datatables
+## Importing metadata and generating datatables
 
 This code generates two datatables:
 1. Metadata relating to genomes used in the Virsorter analyses
@@ -33,8 +33,10 @@ This code generates two datatables:
 ```{r}
 
 # Imports genome metadata
+all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE)
+
 # Only imports columns thought to be important for downstream analysis
-genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
+select_genome_data <- all_genome_data %>%
     select(Taxon.oid = taxon_oid,
            Domain,
            Status,
@@ -54,11 +56,13 @@ genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
            Ecosystem.Subtype,
            Genome.Size = Genome.Size.....assembled,
            Gene.Count = Gene.Count.....assembled,
-           Scaffold.Count = Scaffold.Count.....assembled
+           Scaffold.Count = Scaffold.Count.....assembled,
+           GOLD.Analysis.Project.Type,
+           GOLD.Sequencing.Strategy
            )
   
 # Writes the curated genome metadata to the tables folder
-write.csv(genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
+write.csv(select_genome_data, file = "../tables/formatted_genome_list.csv", row.names = FALSE)
 
 # Imports scaffold metadata
 scaffold_data <- read.csv("../data/scaffold_list.csv", header = TRUE)
@@ -120,7 +124,7 @@ refseq_by_prophage <- refseq_data %>%
 
 
 # Calculates the total number of genomes found to contan at least 1 prophage
-genomes_with_prophage <- distinct(refseq_by_prophage, Genome.ID) %>%
+Refseq_genomes_with_prophage <- distinct(refseq_by_prophage, Genome.ID) %>%
   nrow()
   
   # Selects and orders columns in the datatable
@@ -166,6 +170,10 @@ viromes_by_prophage <- viromes_data %>%
   group_by(Genome.ID) %>%
   mutate(Prophages.per.genome = sum(Prophages.per.genome)) %>%
   ungroup()
+
+# Calculates the total number of genomes found to contan at least 1 prophage
+Viromes_genomes_with_prophage <- distinct(viromes_by_prophage, Genome.ID) %>%
+  nrow()
   
   # Selects and orders columns in the datatable
   # To be inserted later on
@@ -175,8 +183,9 @@ write.csv(viromes_by_prophage, file = "../tables/viromes_by_prophage.csv", row.n
 
 ```
 
-
 ## Prophage detection by genome
+
+For RefSeq data:
 
 ```{r}
 
@@ -195,6 +204,12 @@ write.csv(viromes_by_prophage, file = "../tables/viromes_by_prophage.csv", row.n
 
 # May need to calculate the averages into columns that can later be used to easily collapse down the data
 # May want to create a new column that can be used to pick out or "group_by()" species easily for performing different calculations
+
+```
+
+For Viromes data:
+
+```{r}
 
 ```
 

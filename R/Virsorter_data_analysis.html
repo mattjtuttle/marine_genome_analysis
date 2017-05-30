@@ -133,12 +133,14 @@ $(document).ready(function () {
 <p>A different dataset was originally run through VIRSorter that downloaded bacterial genomes based on habitats that stated that they were marine in nature. This dataset is not being used for further analysis due to the fact that subsequent viewing of the metadata for the genomes revealed that genomes from other aquatic environments were also somehow downloaded. These genomes were originally downloaded on April 28, 2017.</p>
 </div>
 </div>
-<div id="generation-of-metadata-datatables" class="section level2">
-<h2>Generation of metadata datatables</h2>
+<div id="importing-metadata-and-generating-datatables" class="section level2">
+<h2>Importing metadata and generating datatables</h2>
 <p>This code generates two datatables: 1. Metadata relating to genomes used in the Virsorter analyses 2. Metadata relating to scaffolds used in the Virsorter analyses</p>
 <pre class="r"><code># Imports genome metadata
+all_genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE)
+
 # Only imports columns thought to be important for downstream analysis
-genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %&gt;%
+select_genome_data &lt;- all_genome_data %&gt;%
     select(Taxon.oid = taxon_oid,
            Domain,
            Status,
@@ -158,11 +160,13 @@ genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %
            Ecosystem.Subtype,
            Genome.Size = Genome.Size.....assembled,
            Gene.Count = Gene.Count.....assembled,
-           Scaffold.Count = Scaffold.Count.....assembled
+           Scaffold.Count = Scaffold.Count.....assembled,
+           GOLD.Analysis.Project.Type,
+           GOLD.Sequencing.Strategy
            )
   
 # Writes the curated genome metadata to the tables folder
-write.csv(genome_data, file = &quot;../tables/formatted_genome_list.csv&quot;, row.names = FALSE)
+write.csv(select_genome_data, file = &quot;../tables/formatted_genome_list.csv&quot;, row.names = FALSE)
 
 # Imports scaffold metadata
 scaffold_data &lt;- read.csv(&quot;../data/scaffold_list.csv&quot;, header = TRUE)
@@ -215,7 +219,7 @@ refseq_by_prophage &lt;- refseq_data %&gt;%
 
 
 # Calculates the total number of genomes found to contan at least 1 prophage
-genomes_with_prophage &lt;- distinct(refseq_by_prophage, Genome.ID) %&gt;%
+Refseq_genomes_with_prophage &lt;- distinct(refseq_by_prophage, Genome.ID) %&gt;%
   nrow()
   
   # Selects and orders columns in the datatable
@@ -255,6 +259,10 @@ viromes_by_prophage &lt;- viromes_data %&gt;%
   group_by(Genome.ID) %&gt;%
   mutate(Prophages.per.genome = sum(Prophages.per.genome)) %&gt;%
   ungroup()
+
+# Calculates the total number of genomes found to contan at least 1 prophage
+Viromes_genomes_with_prophage &lt;- distinct(viromes_by_prophage, Genome.ID) %&gt;%
+  nrow()
   
   # Selects and orders columns in the datatable
   # To be inserted later on
@@ -264,6 +272,7 @@ write.csv(viromes_by_prophage, file = &quot;../tables/viromes_by_prophage.csv&qu
 </div>
 <div id="prophage-detection-by-genome" class="section level2">
 <h2>Prophage detection by genome</h2>
+<p>For RefSeq data:</p>
 <pre class="r"><code># Determine new columns, compress, and make plots of stuff at the genome level
 
 
@@ -279,6 +288,7 @@ write.csv(viromes_by_prophage, file = &quot;../tables/viromes_by_prophage.csv&qu
 
 # May need to calculate the averages into columns that can later be used to easily collapse down the data
 # May want to create a new column that can be used to pick out or &quot;group_by()&quot; species easily for performing different calculations</code></pre>
+<p>For Viromes data:</p>
 </div>
 <div id="prophage-detection-by-species" class="section level2">
 <h2>Prophage detection by species</h2>

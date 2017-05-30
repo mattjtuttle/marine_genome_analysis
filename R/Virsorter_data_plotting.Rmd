@@ -1,0 +1,25 @@
+---
+title: "RefSeq data plotting"
+author: "Matt Tuttle"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    keep_md: TRUE
+  html_notebook: default
+---
+
+```{r, include = FALSE}
+
+library(tidyverse)
+
+```
+
+## Data information
+
+The following code imports RefSeq data from the tables folder for using in making plots to visualize the data:
+
+```{r}
+
+refseq_by_genome <- read.csv("./data/refseq_by_genome.csv", header = TRUE)
+
+```

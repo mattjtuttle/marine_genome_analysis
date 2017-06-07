@@ -127,11 +127,24 @@ refseq_by_prophage <- refseq_data %>%
 Refseq_genomes_with_prophage <- distinct(refseq_by_prophage, Genome.ID) %>%
   nrow()
   
-  # Selects and orders columns in the datatable
-  # To be inserted later on
-  
 # Writes the datatable to the tables folder
 write.csv(refseq_by_prophage, file = "../tables/refseq_by_prophage.csv", row.names = FALSE)
+
+# Loads a datatable containing calculated locations of prophage fragments detected by VirSorter
+# Makes Fragment column into a character vector so that it may be joined with other datatables
+refseq_prophage_locations <- read.csv("../data/refseq_prophage_locations.csv", header = TRUE) %>%
+  mutate(Fragment = as.character(Fragment))
+
+# Creates a datatable that combines Refseq data at the prophage level with calculated prophage genomic locations
+refseq_by_prophage_locations <- refseq_by_prophage %>%
+  inner_join(refseq_prophage_locations, by = "Fragment")
+  
+# Some fragment lengths are negative in length due to how bp.Start/End were calculated for circular scaffolds
+# Recalculates these negative value by taking into account the length of the contig that the prophage is on
+refseq_by_prophage_locations$Fragment.Length <-ifelse(refseq_by_prophage_locations$Fragment.Length < 0,refseq_by_prophage_locations$Sequence.Length..bp. - refseq_by_prophage_locations$bp.Start + refseq_by_prophage_locations$bp.End, refseq_by_prophage_locations$Fragment.Length)
+  
+# Writes the combined datatable to the tables folder
+write.csv(refseq_by_prophage_locations, file = "../tables/refseq_by_prophage_locations.csv", row.names = FALSE)
 
 ```
 

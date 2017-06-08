@@ -33,7 +33,8 @@ This code generates two datatables:
 ```{r}
 
 # Imports genome metadata
-all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE)
+all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
+  rename(Genome.ID = IMG.Genome.ID)
 
 # Only imports columns thought to be important for downstream analysis
 select_genome_data <- all_genome_data %>%
@@ -41,7 +42,7 @@ select_genome_data <- all_genome_data %>%
            Domain,
            Status,
            Genome.Name = Genome.Name...Sample.Name,
-           IMG.Genome.ID,
+           Genome.ID,
            Phylum,
            Class,
            Order,
@@ -84,7 +85,7 @@ viromes_data <- read.csv("../data/Viromes_data.csv", header = TRUE)
 
 ```
 
-## Detection of prophages
+## Detection of prophages and calculating prophage genomic positions
 
 For RefSeq data:
 
@@ -141,7 +142,7 @@ refseq_by_prophage_locations <- refseq_by_prophage %>%
   
 # Some fragment lengths are negative in length due to how bp.Start/End were calculated for circular scaffolds
 # Recalculates these negative value by taking into account the length of the contig that the prophage is on
-refseq_by_prophage_locations$Fragment.Length <-ifelse(refseq_by_prophage_locations$Fragment.Length < 0,refseq_by_prophage_locations$Sequence.Length..bp. - refseq_by_prophage_locations$bp.Start + refseq_by_prophage_locations$bp.End, refseq_by_prophage_locations$Fragment.Length)
+refseq_by_prophage_locations$Fragment.Length <-ifelse(refseq_by_prophage_locations$Fragment.Length < 0, refseq_by_prophage_locations$Sequence.Length..bp. - refseq_by_prophage_locations$bp.Start + refseq_by_prophage_locations$bp.End, refseq_by_prophage_locations$Fragment.Length)
   
 # Writes the combined datatable to the tables folder
 write.csv(refseq_by_prophage_locations, file = "../tables/refseq_by_prophage_locations.csv", row.names = FALSE)
@@ -188,11 +189,17 @@ viromes_by_prophage <- viromes_data %>%
 Viromes_genomes_with_prophage <- distinct(viromes_by_prophage, Genome.ID) %>%
   nrow()
   
-  # Selects and orders columns in the datatable
-  # To be inserted later on
-  
 # Writes the datatable to the tables folder
 write.csv(viromes_by_prophage, file = "../tables/viromes_by_prophage.csv", row.names = FALSE)
+
+# Need to perform prophage location detection the same way as for the RefSeq data
+#
+#
+#
+#
+#
+#
+#
 
 ```
 
@@ -202,21 +209,51 @@ For RefSeq data:
 
 ```{r}
 
-# Determine new columns, compress, and make plots of stuff at the genome level
+# Collapses down VirSorter data to the genome level
+refseq_by_genome <- refseq_by_prophage_locations %>%
+  
+  # Combines VirSorter data with genomic metadata
+  inner_join(all_genome_data, by = "Genome.ID") %>%
+  
+  # Calculates the total size of 
+  group_by(Genome.ID) %>%
+  mutate(Total.Size.Prophages = sum(Fragment.Length)) %>%
+  ungroup() %>%
+  
+  # Selects columns to keep in final table
+  # Calculates some new columns as well
+  transmute(Genome.ID = Genome.ID,
+            NCBI.Taxon.ID = NCBI.Taxon.ID,
+            Status = Status,
+            Genome = Genome,
+            Phylum = Phylum,
+            Class = Class,
+            Order = Order,
+            Family = Family,
+            Genus = Genus,
+            Species = Species,
+            Strain = Strain,
+            Cultured = Cultured,
+            Ecosystem = Ecosystem,
+            Ecosystem.Category = Ecosystem.Category,
+            Ecosystem.Type = Ecosystem.Type,
+            Ecosystem.Subtype = Ecosystem.Subtype,
+            Genome.Size = Genome.Size.....assembled,
+            Gene.Count = Gene.Count.....assembled,
+            Scaffold.Count = Scaffold.Count.....assembled,
+            GOLD.Analysis.Project.Type = GOLD.Analysis.Project.Type,
+            GOLD.Sequencing.Strategy = GOLD.Sequencing.Strategy,
+            Prophages.per.genome = Prophages.per.genome,
+            Total.Size.Prophages = Total.Size.Prophages,
+            Genome.Size.Without.Prophage = Genome.Size - Total.Size.Prophages,
+            Percentage.of.Genome.Prophage = 100 * (Total.Size.Prophages / Genome.Size)
+            ) %>%
+  
+  # Only keeps a single row for each individual genome
+  distinct(Genome.ID, .keep_all = TRUE)
 
-
-
-# Reduces scaffolds down to the genome
-# Selects only columns of interest
-
-# Combines genomic level prophage data with genome metadata
-
-# Calculates the number of prophages per species
-
-
-
-# May need to calculate the averages into columns that can later be used to easily collapse down the data
-# May want to create a new column that can be used to pick out or "group_by()" species easily for performing different calculations
+# Writes the data to the tables folder
+write.csv(refseq_by_genome, file = "../tables/refseq_by_genome.csv", row.names = FALSE)
 
 ```
 

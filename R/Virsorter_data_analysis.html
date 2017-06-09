@@ -287,7 +287,7 @@ viromes_prophage_locations &lt;- read.csv(&quot;../data/viromes_prophage_locatio
   mutate(Fragment = as.character(Fragment))
 
 # Creates a datatable that combines Refseq data at the prophage level with calculated prophage genomic locations
-viromes_by_prophage_locations &lt;- refseq_by_prophage %&gt;%
+viromes_by_prophage_locations &lt;- viromes_by_prophage %&gt;%
   inner_join(viromes_prophage_locations, by = &quot;Fragment&quot;)
   
 # Some fragment lengths are negative in length due to how bp.Start/End were calculated for circular scaffolds
@@ -346,6 +346,51 @@ refseq_by_genome &lt;- refseq_by_prophage_locations %&gt;%
 # Writes the data to the tables folder
 write.csv(refseq_by_genome, file = &quot;../tables/refseq_by_genome.csv&quot;, row.names = FALSE)</code></pre>
 <p>For Viromes data:</p>
+<pre class="r"><code># Collapses down VirSorter data to the genome level
+viromes_by_genome &lt;- viromes_by_prophage_locations %&gt;%
+  
+  # Combines VirSorter data with genomic metadata
+  inner_join(all_genome_data, by = &quot;Genome.ID&quot;) %&gt;%
+  
+  # Calculates the total size of 
+  group_by(Genome.ID) %&gt;%
+  mutate(Total.Size.Prophages = sum(Fragment.Length)) %&gt;%
+  ungroup() %&gt;%
+  
+  # Selects columns to keep in final table
+  # Calculates some new columns as well
+  transmute(Genome.ID = Genome.ID,
+            NCBI.Taxon.ID = NCBI.Taxon.ID,
+            Status = Status,
+            Genome = Genome,
+            Phylum = Phylum,
+            Class = Class,
+            Order = Order,
+            Family = Family,
+            Genus = Genus,
+            Species = Species,
+            Strain = Strain,
+            Cultured = Cultured,
+            Ecosystem = Ecosystem,
+            Ecosystem.Category = Ecosystem.Category,
+            Ecosystem.Type = Ecosystem.Type,
+            Ecosystem.Subtype = Ecosystem.Subtype,
+            Genome.Size = Genome.Size.....assembled,
+            Gene.Count = Gene.Count.....assembled,
+            Scaffold.Count = Scaffold.Count.....assembled,
+            GOLD.Analysis.Project.Type = GOLD.Analysis.Project.Type,
+            GOLD.Sequencing.Strategy = GOLD.Sequencing.Strategy,
+            Prophages.per.genome = Prophages.per.genome,
+            Total.Size.Prophages = Total.Size.Prophages,
+            Genome.Size.Without.Prophage = Genome.Size - Total.Size.Prophages,
+            Percentage.of.Genome.Prophage = 100 * (Total.Size.Prophages / Genome.Size)
+            ) %&gt;%
+  
+  # Only keeps a single row for each individual genome
+  distinct(Genome.ID, .keep_all = TRUE)
+
+# Writes the data to the tables folder
+write.csv(viromes_by_genome, file = &quot;../tables/viromes_by_genome.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 <div id="prophage-detection-by-species" class="section level2">
 <h2>Prophage detection by species</h2>

@@ -198,7 +198,7 @@ viromes_prophage_locations <- read.csv("../data/viromes_prophage_locations.csv",
   mutate(Fragment = as.character(Fragment))
 
 # Creates a datatable that combines Refseq data at the prophage level with calculated prophage genomic locations
-viromes_by_prophage_locations <- refseq_by_prophage %>%
+viromes_by_prophage_locations <- viromes_by_prophage %>%
   inner_join(viromes_prophage_locations, by = "Fragment")
   
 # Some fragment lengths are negative in length due to how bp.Start/End were calculated for circular scaffolds
@@ -267,6 +267,52 @@ write.csv(refseq_by_genome, file = "../tables/refseq_by_genome.csv", row.names =
 For Viromes data:
 
 ```{r}
+
+# Collapses down VirSorter data to the genome level
+viromes_by_genome <- viromes_by_prophage_locations %>%
+  
+  # Combines VirSorter data with genomic metadata
+  inner_join(all_genome_data, by = "Genome.ID") %>%
+  
+  # Calculates the total size of 
+  group_by(Genome.ID) %>%
+  mutate(Total.Size.Prophages = sum(Fragment.Length)) %>%
+  ungroup() %>%
+  
+  # Selects columns to keep in final table
+  # Calculates some new columns as well
+  transmute(Genome.ID = Genome.ID,
+            NCBI.Taxon.ID = NCBI.Taxon.ID,
+            Status = Status,
+            Genome = Genome,
+            Phylum = Phylum,
+            Class = Class,
+            Order = Order,
+            Family = Family,
+            Genus = Genus,
+            Species = Species,
+            Strain = Strain,
+            Cultured = Cultured,
+            Ecosystem = Ecosystem,
+            Ecosystem.Category = Ecosystem.Category,
+            Ecosystem.Type = Ecosystem.Type,
+            Ecosystem.Subtype = Ecosystem.Subtype,
+            Genome.Size = Genome.Size.....assembled,
+            Gene.Count = Gene.Count.....assembled,
+            Scaffold.Count = Scaffold.Count.....assembled,
+            GOLD.Analysis.Project.Type = GOLD.Analysis.Project.Type,
+            GOLD.Sequencing.Strategy = GOLD.Sequencing.Strategy,
+            Prophages.per.genome = Prophages.per.genome,
+            Total.Size.Prophages = Total.Size.Prophages,
+            Genome.Size.Without.Prophage = Genome.Size - Total.Size.Prophages,
+            Percentage.of.Genome.Prophage = 100 * (Total.Size.Prophages / Genome.Size)
+            ) %>%
+  
+  # Only keeps a single row for each individual genome
+  distinct(Genome.ID, .keep_all = TRUE)
+
+# Writes the data to the tables folder
+write.csv(viromes_by_genome, file = "../tables/viromes_by_genome.csv", row.names = FALSE)
 
 ```
 

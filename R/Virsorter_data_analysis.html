@@ -183,8 +183,9 @@ refseq_data &lt;- read.csv(&quot;../data/Refseq_data.csv&quot;, header = TRUE)
 # Imports VirSorter data output when using the Viromes database
 viromes_data &lt;- read.csv(&quot;../data/Viromes_data.csv&quot;, header = TRUE)</code></pre>
 </div>
-<div id="detection-of-prophages-and-calculating-prophage-genomic-positions" class="section level2">
-<h2>Detection of prophages and calculating prophage genomic positions</h2>
+<div id="detection-of-prophages-at-prophage-level" class="section level2">
+<h2>Detection of prophages at prophage level</h2>
+<p>This section creates tables for all detected prophage and combines VIRSorter output with genomic positions. Information about genomic positions of predicted prophages was extracted from the headers of the fasta file created by VIRSorter that contains all of the regions that it predicts to be a prophage. The method of extraction can be found in the genome_location_calculating folder. Scripts used to help extract and process this data for integration are also found in this folder.</p>
 <p>For RefSeq data:</p>
 <pre class="r"><code># Makes changes to VirSorter output datatable to give more information about found prophages
 refseq_by_prophage &lt;- refseq_data %&gt;%
@@ -391,6 +392,40 @@ viromes_by_genome &lt;- viromes_by_prophage_locations %&gt;%
 
 # Writes the data to the tables folder
 write.csv(viromes_by_genome, file = &quot;../tables/viromes_by_genome.csv&quot;, row.names = FALSE)</code></pre>
+</div>
+<div id="calculating-differences-in-prophage-detection-between-refseq-and-viromes-data" class="section level2">
+<h2>Calculating differences in prophage detection between RefSeq and Viromes data</h2>
+<pre class="r"><code># Determines number of detected prophages for the Refseq data at the genome level for comparing with Viromes
+# Prophages per genome variable name changed since values will differ from Viromes dataset when combined
+refseq_unique &lt;- distinct(refseq_by_prophage_locations, Genome.ID, .keep_all = TRUE) %&gt;%
+  transmute(Genome.ID = Genome.ID,
+            Refseq.prophages.per.genome = Prophages.per.genome)
+
+# Determines number of detected prophages for the Viromes dataset as above
+viromes_unique &lt;- distinct(viromes_by_prophage_locations, Genome.ID, .keep_all = TRUE) %&gt;%
+  transmute(Genome.ID = Genome.ID,
+            Viromes.prophages.per.genome = Prophages.per.genome)
+
+# Combines Refseq and Viromes data and looks at the differences in prophage detection at genome level
+different_detection_at_genome_level &lt;- full_join(refseq_unique, viromes_unique, by = &quot;Genome.ID&quot;) %&gt;%
+  
+  # Turns all NA values to 0
+  # Filtering below will not work with NA values
+  mutate(Refseq.prophages.per.genome =
+           ifelse(is.na(Refseq.prophages.per.genome), 0, Refseq.prophages.per.genome)) %&gt;%
+  mutate(Viromes.prophages.per.genome =
+           ifelse(is.na(Viromes.prophages.per.genome), 0, Viromes.prophages.per.genome)) %&gt;%
+  
+  # Combines data with genomic data in order to view genome names
+  inner_join(select_genome_data, by = &quot;Genome.ID&quot;) %&gt;%
+  select(Genome.ID,
+         Genome.Name,
+         Refseq.prophages.per.genome,
+         Viromes.prophages.per.genome) %&gt;%
+  
+  # Filters by number of prophage to only show differences between datasets
+  filter(Refseq.prophages.per.genome != Viromes.prophages.per.genome) %&gt;%
+  arrange(Refseq.prophages.per.genome)</code></pre>
 </div>
 <div id="prophage-detection-by-species" class="section level2">
 <h2>Prophage detection by species</h2>

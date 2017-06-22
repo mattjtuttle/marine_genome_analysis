@@ -337,6 +337,9 @@ different_detection_at_genome_level <- full_join(refseq_unique, viromes_unique, 
   # Filters by number of prophage to only show differences between datasets
   filter(Refseq.prophages.per.genome != Viromes.prophages.per.genome) %>%
   arrange(Refseq.prophages.per.genome)
+
+# Creates a .csv file in the tables folder comparing detection between the Refseq and Viromes datasets
+write.csv(different_detection_at_genome_level, file = "../tables/database_differences_by_genome.csv", row.names = FALSE)
 ```
 
 ## Prophage detection by species

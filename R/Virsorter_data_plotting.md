@@ -27,8 +27,19 @@ refseq_by_prophage <- read.csv("../tables/refseq_by_prophage.csv", header = TRUE
 viromes_by_prophage <- read.csv("../tables/viromes_by_prophage.csv", header = TRUE)
 ```
 
+## Phylogenetic distribution of IMG dataset of marine bacterial genomes
 
-## Phylogenic distribution at the genome level
+
+```r
+# 
+metadata_by_phyla <- genome_metadata %>%
+  count(Phylum, sort = TRUE) %>%
+  transmute(Phylum,
+            Dataset.Genomes = n)
+```
+
+
+## Phylogenetic distribution at the genome level
 
 This plot compares the phylogenetic distribution of the RefSeq and Viromes datasets at the genome level. It creates a table which is saved to the tables folder as well as creates a plot to visualize differences between the two datasets.
 
@@ -76,9 +87,20 @@ viromes_genomes_by_phyla <- viromes_genome_distribution %>%
   transmute(Phylum,
             Viromes.Genomes = n)
 
-# Combines the RefSeq and Viromes phyla tables
-genomes_by_phyla <- full_join(refseq_genomes_by_phyla, viromes_genomes_by_phyla, by = "Phylum")
+# Combines the RefSeq and Viromes phyla tables with dataset metadata
+genomes_by_phyla <- full_join(refseq_genomes_by_phyla, viromes_genomes_by_phyla, by = "Phylum") %>%
+  full_join(metadata_by_phyla, by = "Phylum")
+  
+# Makes all NA values zeros
+genomes_by_phyla[is.na(genomes_by_phyla)] <- 0
 
+# Calculates percentage of bacterial phylum containing prophages
+genomes_by_phyla <- genomes_by_phyla %>%
+  mutate(RefSeq.Percent = 100 * (RefSeq.Genomes / Dataset.Genomes)) %>%
+  mutate(Viromes.Percent = 100 * (Viromes.Genomes / Dataset.Genomes))
+
+
+# Writes the table to the tables folder
 write.csv(genomes_by_phyla, file = "../tables/genomes_by_phyla.csv", row.names = FALSE)
 
 

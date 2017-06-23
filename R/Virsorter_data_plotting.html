@@ -11,7 +11,7 @@
 
 <meta name="author" content="Matt Tuttle" />
 
-<meta name="date" content="2017-06-22" />
+<meta name="date" content="2017-06-23" />
 
 <title>RefSeq data plotting</title>
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">RefSeq data plotting</h1>
 <h4 class="author"><em>Matt Tuttle</em></h4>
-<h4 class="date"><em>2017-06-22</em></h4>
+<h4 class="date"><em>2017-06-23</em></h4>
 
 </div>
 
@@ -143,8 +143,16 @@ refseq_by_prophage &lt;- read.csv(&quot;../tables/refseq_by_prophage.csv&quot;, 
 # Imports Viromes data at the prophage level
 viromes_by_prophage &lt;- read.csv(&quot;../tables/viromes_by_prophage.csv&quot;, header = TRUE)</code></pre>
 </div>
-<div id="phylogenic-distribution-at-the-genome-level" class="section level2">
-<h2>Phylogenic distribution at the genome level</h2>
+<div id="phylogenetic-distribution-of-img-dataset-of-marine-bacterial-genomes" class="section level2">
+<h2>Phylogenetic distribution of IMG dataset of marine bacterial genomes</h2>
+<pre class="r"><code># 
+metadata_by_phyla &lt;- genome_metadata %&gt;%
+  count(Phylum, sort = TRUE) %&gt;%
+  transmute(Phylum,
+            Dataset.Genomes = n)</code></pre>
+</div>
+<div id="phylogenetic-distribution-at-the-genome-level" class="section level2">
+<h2>Phylogenetic distribution at the genome level</h2>
 <p>This plot compares the phylogenetic distribution of the RefSeq and Viromes datasets at the genome level. It creates a table which is saved to the tables folder as well as creates a plot to visualize differences between the two datasets.</p>
 <pre class="r"><code># Selects Genome IDs from all of the genomes for which prophages were predicted
 refseq_IDs &lt;- refseq_by_genome %&gt;%
@@ -188,9 +196,20 @@ viromes_genomes_by_phyla &lt;- viromes_genome_distribution %&gt;%
   transmute(Phylum,
             Viromes.Genomes = n)
 
-# Combines the RefSeq and Viromes phyla tables
-genomes_by_phyla &lt;- full_join(refseq_genomes_by_phyla, viromes_genomes_by_phyla, by = &quot;Phylum&quot;)
+# Combines the RefSeq and Viromes phyla tables with dataset metadata
+genomes_by_phyla &lt;- full_join(refseq_genomes_by_phyla, viromes_genomes_by_phyla, by = &quot;Phylum&quot;) %&gt;%
+  full_join(metadata_by_phyla, by = &quot;Phylum&quot;)
+  
+# Makes all NA values zeros
+genomes_by_phyla[is.na(genomes_by_phyla)] &lt;- 0
 
+# Calculates percentage of bacterial phylum containing prophages
+genomes_by_phyla &lt;- genomes_by_phyla %&gt;%
+  mutate(RefSeq.Percent = 100 * (RefSeq.Genomes / Dataset.Genomes)) %&gt;%
+  mutate(Viromes.Percent = 100 * (Viromes.Genomes / Dataset.Genomes))
+
+
+# Writes the table to the tables folder
 write.csv(genomes_by_phyla, file = &quot;../tables/genomes_by_phyla.csv&quot;, row.names = FALSE)
 
 

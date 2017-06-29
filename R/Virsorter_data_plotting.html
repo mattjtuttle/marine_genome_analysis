@@ -11,7 +11,7 @@
 
 <meta name="author" content="Matt Tuttle" />
 
-<meta name="date" content="2017-06-23" />
+<meta name="date" content="2017-06-29" />
 
 <title>RefSeq data plotting</title>
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">RefSeq data plotting</h1>
 <h4 class="author"><em>Matt Tuttle</em></h4>
-<h4 class="date"><em>2017-06-23</em></h4>
+<h4 class="date"><em>2017-06-29</em></h4>
 
 </div>
 
@@ -215,6 +215,47 @@ write.csv(genomes_by_phyla, file = &quot;../tables/genomes_by_phyla.csv&quot;, r
 
 # Creates a plot of Refseq data by phylum
 # Creates a plot of Viromes data by phylum</code></pre>
+</div>
+<div id="proteobacterial-class-distribution-at-the-prophage-level" class="section level2">
+<h2>Proteobacterial class distribution at the prophage level</h2>
+<pre class="r"><code># Calculates number of genomes in each proteobacterial class for the overall dataset
+proteo_metadata_by_class &lt;- genome_metadata %&gt;%
+  filter(Phylum == &quot;Proteobacteria&quot;) %&gt;%
+  count(Class, sort = TRUE) %&gt;%
+  transmute(Class,
+            Dataset.Genomes = n)
+
+# Calculates number of genomes in each proteobacterial class detected to contain a prophage via the refseq database
+# Uses genome distributions from datasets in calculating
+refseq_proteo_genomes_by_class &lt;- refseq_genome_distribution %&gt;%
+  filter(Phylum == &quot;Proteobacteria&quot;) %&gt;%
+  count(Class, sort = TRUE) %&gt;%
+  transmute(Class,
+            RefSeq.Genomes = n)
+
+# Calculates number of genomes in each proteobacterial class detected to contain a prophage via the viromes database
+# Uses genome distributions from datasets in calculating
+viromes_proteo_genomes_by_class &lt;- viromes_genome_distribution %&gt;%
+  filter(Phylum == &quot;Proteobacteria&quot;) %&gt;%
+  count(Class, sort = TRUE) %&gt;%
+  transmute(Class,
+            Viromes.Genomes = n)
+
+# Combines the RefSeq and Viromes prteobacterial class tables with dataset metadata
+proteo_genomes_by_class &lt;- full_join(refseq_proteo_genomes_by_class, viromes_proteo_genomes_by_class, by = &quot;Class&quot;) %&gt;%
+  full_join(proteo_metadata_by_class, by = &quot;Class&quot;)
+  
+# Makes all NA values zeros
+proteo_genomes_by_class[is.na(proteo_genomes_by_class)] &lt;- 0
+
+# Calculates the percentage of proteobacterial classes containing prophages
+proteo_genomes_by_class &lt;- proteo_genomes_by_class %&gt;%
+  mutate(RefSeq.Percent = 100 * (RefSeq.Genomes / Dataset.Genomes)) %&gt;%
+  mutate(Viromes.Percent = 100 * (Viromes.Genomes / Dataset.Genomes))
+
+
+# Writes the table to the tables folder
+write.csv(proteo_genomes_by_class, file = &quot;../tables/proteo_genomes_by_class.csv&quot;, row.names = FALSE)</code></pre>
 </div>
 <div id="phylogenetic-distribution-at-the-prophage-level" class="section level2">
 <h2>Phylogenetic distribution at the prophage level</h2>

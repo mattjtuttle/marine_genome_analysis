@@ -122,6 +122,52 @@ write.csv(genomes_by_phyla, file = "../tables/genomes_by_phyla.csv", row.names =
 
 ```
 
+## Proteobacterial class distribution at the prophage level
+
+```{r}
+
+# Calculates number of genomes in each proteobacterial class for the overall dataset
+proteo_metadata_by_class <- genome_metadata %>%
+  filter(Phylum == "Proteobacteria") %>%
+  count(Class, sort = TRUE) %>%
+  transmute(Class,
+            Dataset.Genomes = n)
+
+# Calculates number of genomes in each proteobacterial class detected to contain a prophage via the refseq database
+# Uses genome distributions from datasets in calculating
+refseq_proteo_genomes_by_class <- refseq_genome_distribution %>%
+  filter(Phylum == "Proteobacteria") %>%
+  count(Class, sort = TRUE) %>%
+  transmute(Class,
+            RefSeq.Genomes = n)
+
+# Calculates number of genomes in each proteobacterial class detected to contain a prophage via the viromes database
+# Uses genome distributions from datasets in calculating
+viromes_proteo_genomes_by_class <- viromes_genome_distribution %>%
+  filter(Phylum == "Proteobacteria") %>%
+  count(Class, sort = TRUE) %>%
+  transmute(Class,
+            Viromes.Genomes = n)
+
+# Combines the RefSeq and Viromes prteobacterial class tables with dataset metadata
+proteo_genomes_by_class <- full_join(refseq_proteo_genomes_by_class, viromes_proteo_genomes_by_class, by = "Class") %>%
+  full_join(proteo_metadata_by_class, by = "Class")
+  
+# Makes all NA values zeros
+proteo_genomes_by_class[is.na(proteo_genomes_by_class)] <- 0
+
+# Calculates the percentage of proteobacterial classes containing prophages
+proteo_genomes_by_class <- proteo_genomes_by_class %>%
+  mutate(RefSeq.Percent = 100 * (RefSeq.Genomes / Dataset.Genomes)) %>%
+  mutate(Viromes.Percent = 100 * (Viromes.Genomes / Dataset.Genomes))
+
+
+# Writes the table to the tables folder
+write.csv(proteo_genomes_by_class, file = "../tables/proteo_genomes_by_class.csv", row.names = FALSE)
+
+```
+
+
 ## Phylogenetic distribution at the prophage level
 
 ```{r}

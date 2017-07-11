@@ -1,4 +1,4 @@
-# RefSeq data analysis
+# VirSorter data analysis
 Matt Tuttle  
 May 22, 2017  
 

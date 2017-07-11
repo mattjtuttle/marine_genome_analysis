@@ -1,5 +1,5 @@
 ---
-title: "RefSeq data analysis"
+title: "VirSorter data analysis"
 author: "Matt Tuttle"
 date: "May 22, 2017"
 output:

@@ -1,4 +1,4 @@
-﻿Contig_id,Nb genes contigs,Fragment,Nb genes,Category,Nb phage hallmark genes,Phage gene enrichment sig,Non-Caudovirales phage gene enrichment sig,Pfam depletion sig,Uncharacterized enrichment sig,Strand switch depletion sig,Short genes enrichment sig
+Contig_id,Nb genes contigs,Fragment,Nb genes,Category,Nb phage hallmark genes,Phage gene enrichment sig,Non-Caudovirales phage gene enrichment sig,Pfam depletion sig,Uncharacterized enrichment sig,Strand switch depletion sig,Short genes enrichment sig
 VIRSorter_2501651735_PE3_Contig_595-circular,53,VIRSorter_2501651735_PE3_Contig_595-circular,53,1,2,3.150659498,,28.87300354,gene_13-gene_47:4.93508387568052,2.692612457,
 VIRSorter_2527303452_AB755C07D09_contig_56_0_52-circular,7,VIRSorter_2527303452_AB755C07D09_contig_56_0_52-circular,7,1,2,3.751990014,10.72118176,4.777848433,,,
 VIRSorter_2527303585_AB755C14H09_contig_61_0_59-circular,7,VIRSorter_2527303585_AB755C14H09_contig_61_0_59-circular,7,1,1,3.751990014,10.72118176,4.777848433,,,2.564155634

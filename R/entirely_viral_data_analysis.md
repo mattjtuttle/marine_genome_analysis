@@ -127,7 +127,7 @@ Vir_Viromes_genomes_with_prophage <- distinct(Vir_viromes_by_prophage, Genome.ID
   nrow()
   
 # Writes the datatable to the tables folder
-write.csv(Vir_viromes_by_prophage, file = "../tables/enirely_viral_viromes_by_prophage.csv", row.names = FALSE)
+write.csv(Vir_viromes_by_prophage, file = "../tables/entirely_viral_viromes_by_prophage.csv", row.names = FALSE)
 
 # Calculates the start and end points of prophage location and number of genes
 # Since the entire fragment is annotated as being viral, the first gene and first bp are the starts of all these sequences

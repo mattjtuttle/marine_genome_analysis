@@ -22,6 +22,7 @@ The following data is comprised of sequences that VIRsorter detected as being so
 
 ```{r}
 
+
 all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
   rename(Genome.ID = IMG.Genome.ID)
 

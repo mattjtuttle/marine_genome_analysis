@@ -164,13 +164,13 @@ write.csv(all_viromes_by_genome_cat12_summary, file = "../tables/summaries/all_v
 
 ## Calculating statistics on the output datasets
 
-The following code calculates some numbers that pertain to prophage detection of the overall dataset:
+The following code calculates some numbers that pertain to prophage detection of the overall output dataset:
 
 ```{r}
 
-# Creates a function that calulates the percent lysogens detected that were from cultivated isolates
+# Creates a function that calculates some basic overall stats on the VirSorter output datasets
 # Only takes into account the phyla for which there are at least ten representatives in the overall dataset
-calc_cultured <- function(df){
+calc_stats <- function(df){
   
   table <- df %>%
     filter(Phylum %in% c("Firmicutes",
@@ -188,7 +188,12 @@ calc_cultured <- function(df){
                          "Nitrospinae",
                          "Nitrospirae")
            ) %>%
-    summarise(Percent.Cultured = 100 * (sum(Cultured == "Yes") / n()) )
+    summarise(# Calulates the percent lysogens detected that were from cultivated isolates
+              Percent.Cultured = 100 * (sum(Cultured == "Yes") / n()),
+              
+              # Calculates the percent of complete (finished) genomes containing prophage
+              Percent.Compelete = 100 * (sum(Status == "Finished") / n())
+              )
   
   return(table)
 }
@@ -200,7 +205,7 @@ For RefSeq:
 ```{r}
 
 # Calculates percent of genomes of isolated organisms where at least one prophage was detected
-refseq_13_cultured <- calc_cultured(all_refseq_by_genome_cat13)
+refseq_13_overall <- calc_stats(all_refseq_by_genome_cat13)
 
 ```
 
@@ -209,7 +214,7 @@ For Viromes:
 ```{r}
 
 # Calculates percent of genomes of isolated organisms where at least one prophage was detected
-viromes_13_cultured <- calc_cultured(all_viromes_by_genome_cat13)
+viromes_13_overall <- calc_stats(all_viromes_by_genome_cat13)
 
 ```
 

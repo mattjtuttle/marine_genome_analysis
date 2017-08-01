@@ -198,10 +198,9 @@ create_summary_table &lt;- function(df){
   return(table)
 }</code></pre>
 </div>
-<div id="creation-of-summary-datatables" class="section level2">
-<h2>Creation of summary datatables</h2>
+<div id="creation-of-summary-datatables-by-phyla" class="section level2">
+<h2>Creation of summary datatables by phyla</h2>
 <p>For the overall dataset queried:</p>
-<p>Note that the overall dataset calculates numbers for <strong>all</strong> phyla. Phyla not mentioned in the publication will need to be removed at a later date.</p>
 <pre class="r"><code># Creates table
 queried_genomes_summary &lt;- create_summary_table(all_genome_data)
 
@@ -232,6 +231,40 @@ all_viromes_by_genome_cat12_summary &lt;- create_summary_table(all_viromes_by_ge
 
 # Writes it into a summaries subfolder of the tables folder
 write.csv(all_viromes_by_genome_cat12_summary, file = &quot;../tables/summaries/all_viromes_by_genome_cat12_summary.csv&quot;, row.names = FALSE)</code></pre>
+</div>
+<div id="calculating-statistics-on-the-output-datasets" class="section level2">
+<h2>Calculating statistics on the output datasets</h2>
+<p>The following code calculates some numbers that pertain to prophage detection of the overall dataset:</p>
+<pre class="r"><code># Creates a function that calulates the percent lysogens detected that were from cultivated isolates
+# Only takes into account the phyla for which there are at least ten representatives in the overall dataset
+calc_cultured &lt;- function(df){
+  
+  table &lt;- df %&gt;%
+    filter(Phylum %in% c(&quot;Firmicutes&quot;,
+                         &quot;Proteobacteria&quot;,
+                         &quot;Actinobacteria&quot;,
+                         &quot;Bacteroidetes&quot;,
+                         &quot;Cyanobacteria&quot;,
+                         &quot;Chloroflexi&quot;,
+                         &quot;Planctomycetes&quot;,
+                         &quot;Verrucomicrobia&quot;,
+                         &quot;Deferribacteres&quot;,
+                         &quot;Gemmatimonadetes&quot;,
+                         &quot;Marinimicrobia&quot;,
+                         &quot;Thermotogae&quot;,
+                         &quot;Nitrospinae&quot;,
+                         &quot;Nitrospirae&quot;)
+           ) %&gt;%
+    summarise(Percent.Cultured = 100 * (sum(Cultured == &quot;Yes&quot;) / n()) )
+  
+  return(table)
+}</code></pre>
+<p>For RefSeq:</p>
+<pre class="r"><code># Calculates percent of genomes of isolated organisms where at least one prophage was detected
+refseq_13_cultured &lt;- calc_cultured(all_refseq_by_genome_cat13)</code></pre>
+<p>For Viromes:</p>
+<pre class="r"><code># Calculates percent of genomes of isolated organisms where at least one prophage was detected
+viromes_13_cultured &lt;- calc_cultured(all_viromes_by_genome_cat13)</code></pre>
 </div>
 
 

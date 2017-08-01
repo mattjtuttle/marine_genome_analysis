@@ -84,11 +84,9 @@ create_summary_table <- function(df){
 }
 ```
 
-## Creation of summary datatables
+## Creation of summary datatables by phyla
 
 For the overall dataset queried:
-
-Note that the overall dataset calculates numbers for __all__ phyla. Phyla not mentioned in the publication will need to be removed at a later date.
 
 
 ```r
@@ -144,5 +142,54 @@ all_viromes_by_genome_cat12_summary <- create_summary_table(all_viromes_by_genom
 
 # Writes it into a summaries subfolder of the tables folder
 write.csv(all_viromes_by_genome_cat12_summary, file = "../tables/summaries/all_viromes_by_genome_cat12_summary.csv", row.names = FALSE)
+```
+
+
+## Calculating statistics on the output datasets
+
+The following code calculates some numbers that pertain to prophage detection of the overall dataset:
+
+
+```r
+# Creates a function that calulates the percent lysogens detected that were from cultivated isolates
+# Only takes into account the phyla for which there are at least ten representatives in the overall dataset
+calc_cultured <- function(df){
+  
+  table <- df %>%
+    filter(Phylum %in% c("Firmicutes",
+                         "Proteobacteria",
+                         "Actinobacteria",
+                         "Bacteroidetes",
+                         "Cyanobacteria",
+                         "Chloroflexi",
+                         "Planctomycetes",
+                         "Verrucomicrobia",
+                         "Deferribacteres",
+                         "Gemmatimonadetes",
+                         "Marinimicrobia",
+                         "Thermotogae",
+                         "Nitrospinae",
+                         "Nitrospirae")
+           ) %>%
+    summarise(Percent.Cultured = 100 * (sum(Cultured == "Yes") / n()) )
+  
+  return(table)
+}
+```
+
+For RefSeq:
+
+
+```r
+# Calculates percent of genomes of isolated organisms where at least one prophage was detected
+refseq_13_cultured <- calc_cultured(all_refseq_by_genome_cat13)
+```
+
+For Viromes:
+
+
+```r
+# Calculates percent of genomes of isolated organisms where at least one prophage was detected
+viromes_13_cultured <- calc_cultured(all_viromes_by_genome_cat13)
 ```
 

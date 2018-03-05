@@ -24,7 +24,8 @@ This code generates two datatables:
 ```r
 # Imports genome metadata
 all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
-  rename(Genome.ID = IMG.Genome.ID)
+  rename(Genome.ID = IMG.Genome.ID) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
 
 # Only imports columns thought to be important for downstream analysis
 select_genome_data <- all_genome_data %>%

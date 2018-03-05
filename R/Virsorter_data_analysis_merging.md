@@ -166,8 +166,6 @@ all_viromes_by_genome <- bind_rows(pro_viromes_by_genome, vir_viromes_by_genome)
 ## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character
 
 ## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character
-
-## Warning in bind_rows_(x, .id): Unequal factor levels: coercing to character
 ```
 
 ```r

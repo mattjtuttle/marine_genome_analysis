@@ -131,7 +131,8 @@ $(document).ready(function () {
 <div id="data-import" class="section level2">
 <h2>Data import</h2>
 <pre class="r"><code>all_genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %&gt;%
-  rename(Genome.ID = IMG.Genome.ID)
+  rename(Genome.ID = IMG.Genome.ID) %&gt;%
+  filter(GOLD.Analysis.Project.Type != &quot;Single Cell Analysis (unscreened)&quot;)
 
 scaffold_data &lt;- read.csv(&quot;../data/scaffold_list.csv&quot;, header = TRUE)
 

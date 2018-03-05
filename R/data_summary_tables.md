@@ -16,13 +16,21 @@ The following scripts are for creating a data summary table that gives an overvi
 all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
   rename(Genome.ID = IMG.Genome.ID,
          Genome.Size = Genome.Size.....assembled,
-         Scaffold.Count = Scaffold.Count.....assembled)
+         Scaffold.Count = Scaffold.Count.....assembled) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)") # Removes all SAGs that were not contamination screened
 
 # Imports various VirSorter outputs
-all_refseq_by_genome_cat13 <- read.csv("../tables/all_refseq_by_genome.csv", header = TRUE)
-all_refseq_by_genome_cat12 <- read.csv("../tables/all_refseq_by_genome_cat12.csv", header = TRUE)
-all_viromes_by_genome_cat13 <- read.csv("../tables/all_viromes_by_genome.csv", header = TRUE)
-all_viromes_by_genome_cat12 <- read.csv("../tables/all_viromes_by_genome_cat12.csv", header = TRUE)
+all_refseq_by_genome_cat13 <- read.csv("../tables/all_refseq_by_genome.csv", header = TRUE) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
+
+all_refseq_by_genome_cat12 <- read.csv("../tables/all_refseq_by_genome_cat12.csv", header = TRUE) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
+
+all_viromes_by_genome_cat13 <- read.csv("../tables/all_viromes_by_genome.csv", header = TRUE) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
+
+all_viromes_by_genome_cat12 <- read.csv("../tables/all_viromes_by_genome_cat12.csv", header = TRUE) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
 ```
 
 ## A function for the creation of summary tables
@@ -37,7 +45,6 @@ phyla_with_ten <- all_genome_data %>%
   ungroup() %>%
   distinct(Phylum) %>%
   filter(Phylum != "unclassified") # Removes genomes where the Phylum is unclassified
-
 
 # Creates a function that is able to make summary tables for VirSorter data at the genome level
 create_summary_table <- function(df){

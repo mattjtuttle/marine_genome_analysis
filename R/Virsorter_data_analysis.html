@@ -138,7 +138,8 @@ $(document).ready(function () {
 <p>This code generates two datatables: 1. Metadata relating to genomes used in the Virsorter analyses 2. Metadata relating to scaffolds used in the Virsorter analyses</p>
 <pre class="r"><code># Imports genome metadata
 all_genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %&gt;%
-  rename(Genome.ID = IMG.Genome.ID)
+  rename(Genome.ID = IMG.Genome.ID) %&gt;%
+  filter(GOLD.Analysis.Project.Type != &quot;Single Cell Analysis (unscreened)&quot;)
 
 # Only imports columns thought to be important for downstream analysis
 select_genome_data &lt;- all_genome_data %&gt;%

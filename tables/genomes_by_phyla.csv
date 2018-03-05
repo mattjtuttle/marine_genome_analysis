@@ -1,44 +1,43 @@
 "Phylum","RefSeq.Genomes","Viromes.Genomes","Dataset.Genomes","RefSeq.Percent","Viromes.Percent"
-"Proteobacteria",113,115,973,11.6135662898253,11.8191161356629
-"Bacteroidetes",24,24,122,19.672131147541,19.672131147541
-"Cyanobacteria",21,21,160,13.125,13.125
+"Proteobacteria",113,115,725,15.5862068965517,15.8620689655172
+"Bacteroidetes",24,24,100,24,24
+"Cyanobacteria",21,21,119,17.6470588235294,17.6470588235294
 "Firmicutes",17,17,51,33.3333333333333,33.3333333333333
-"Actinobacteria",8,7,99,8.08080808080808,7.07070707070707
+"Actinobacteria",8,7,87,9.19540229885057,8.04597701149425
 "Calditrichaeota",2,2,2,100,100
 "Aquificae",1,1,7,14.2857142857143,14.2857142857143
 "Caldithrixae",1,1,1,100,100
 "Chlorobi",1,2,3,33.3333333333333,66.6666666666667
 "Fusobacteria",1,1,2,50,50
 "Nitrospirae",1,1,13,7.69230769230769,7.69230769230769
-"Planctomycetes",1,1,32,3.125,3.125
-"Spirochaetes",1,1,4,25,25
-"Verrucomicrobia",1,1,22,4.54545454545455,4.54545454545455
-"Gemmatimonadetes",0,1,10,0,10
-"Chloroflexi",0,0,94,0,0
-"unclassified",0,0,33,0,0
-"Deferribacteres",0,0,26,0,0
+"Planctomycetes",1,1,28,3.57142857142857,3.57142857142857
+"Spirochaetes",1,1,2,50,50
+"Verrucomicrobia",1,1,6,16.6666666666667,16.6666666666667
+"Gemmatimonadetes",0,1,7,0,14.2857142857143
+"Chloroflexi",0,0,79,0,0
+"unclassified",0,0,26,0,0
 "Thermotogae",0,0,25,0,0
-"Candidatus Marinimicrobia",0,0,14,0,0
-"Marinimicrobia",0,0,10,0,0
-"Nitrospinae",0,0,10,0,0
+"Candidatus Marinimicrobia",0,0,13,0,0
+"Deferribacteres",0,0,12,0,0
+"Marinimicrobia",0,0,8,0,0
 "Candidatus Acetothermia",0,0,7,0,0
-"Candidatus Atribacteria",0,0,7,0,0
 "Candidatus Parcubacteria",0,0,7,0,0
 "candidate division Zixibacteria",0,0,6,0,0
+"Nitrospinae",0,0,6,0,0
 "Candidatus Aminicenantes",0,0,4,0,0
 "Thermodesulfobacteria",0,0,4,0,0
-"Acidobacteria",0,0,3,0,0
 "candidate division WOR-3",0,0,3,0,0
 "Candidatus Latescibacteria",0,0,3,0,0
 "Candidatus Omnitrophica",0,0,3,0,0
 "Deinococcus-Thermus",0,0,3,0,0
+"Acidobacteria",0,0,2,0,0
 "Candidatus Peregrinibacteria",0,0,2,0,0
-"Chlamydiae",0,0,2,0,0
 "Gracilibacteria",0,0,2,0,0
 "Ignavibacteriae",0,0,2,0,0
 "Parcubacteria",0,0,2,0,0
 "candidate division KD3-62",0,0,1,0,0
 "Candidatus Microgenomates",0,0,1,0,0
+"Chlamydiae",0,0,1,0,0
 "Lentisphaerae",0,0,1,0,0
 "Microgenomates",0,0,1,0,0
 "PER",0,0,1,0,0

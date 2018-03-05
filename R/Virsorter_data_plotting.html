@@ -11,7 +11,7 @@
 
 <meta name="author" content="Matt Tuttle" />
 
-<meta name="date" content="2017-06-29" />
+<meta name="date" content="2018-03-05" />
 
 <title>RefSeq data plotting</title>
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">RefSeq data plotting</h1>
 <h4 class="author"><em>Matt Tuttle</em></h4>
-<h4 class="date"><em>2017-06-29</em></h4>
+<h4 class="date"><em>2018-03-05</em></h4>
 
 </div>
 
@@ -135,7 +135,8 @@ viromes_by_genome &lt;- read.csv(&quot;../tables/viromes_by_genome.csv&quot;, he
 
 # Imports genomic metadata
 genome_metadata &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %&gt;%
-  mutate(Genome.ID = IMG.Genome.ID)
+  mutate(Genome.ID = IMG.Genome.ID) %&gt;%
+  filter(GOLD.Analysis.Project.Type != &quot;Single Cell Analysis (unscreened)&quot;)
 
 # Imports RefSeq data at the prophage level
 refseq_by_prophage &lt;- read.csv(&quot;../tables/refseq_by_prophage.csv&quot;, header = TRUE)

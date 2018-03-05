@@ -28,7 +28,8 @@ viromes_by_genome <- read.csv("../tables/viromes_by_genome.csv", header = TRUE)
 
 # Imports genomic metadata
 genome_metadata <- read.csv("../data/genome_list.csv", header = TRUE) %>%
-  mutate(Genome.ID = IMG.Genome.ID)
+  mutate(Genome.ID = IMG.Genome.ID) %>%
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
 
 # Imports RefSeq data at the prophage level
 refseq_by_prophage <- read.csv("../tables/refseq_by_prophage.csv", header = TRUE)

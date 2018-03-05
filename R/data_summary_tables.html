@@ -132,10 +132,17 @@ $(document).ready(function () {
 <h2>Data import</h2>
 <pre class="r"><code># Imports the entire queried dataset
 all_genome_data &lt;- read.csv(&quot;../data/genome_list.csv&quot;, header = TRUE) %&gt;%
+  
+  # Changes headers for some columns
   rename(Genome.ID = IMG.Genome.ID,
          Genome.Size = Genome.Size.....assembled,
          Scaffold.Count = Scaffold.Count.....assembled) %&gt;%
-  filter(GOLD.Analysis.Project.Type != &quot;Single Cell Analysis (unscreened)&quot;) # Removes all SAGs that were not contamination screened
+  
+  # Removes all SAGs that were not contamination screened
+  filter(GOLD.Analysis.Project.Type != &quot;Single Cell Analysis (unscreened)&quot;)
+  
+# Changes names of phyla to remove &quot;Candidatus&quot;
+all_genome_data$Phylum[all_genome_data$Phylum %in% &quot;Candidatus Marinimicrobia&quot;] &lt;- &quot;Marinimicrobia&quot;
 
 # Imports various VirSorter outputs
 all_refseq_by_genome_cat13 &lt;- read.csv(&quot;../tables/all_refseq_by_genome.csv&quot;, header = TRUE) %&gt;%
@@ -167,6 +174,7 @@ create_summary_table &lt;- function(df){
   table &lt;- df %&gt;%
     group_by(Phylum) %&gt;%
     summarise(
+      Number.of.genomes = n(),
       Percent.Complete.Genomes = 100 * (sum(Status == &quot;Finished&quot;) / n()),
       Percent.Cultured.Genomes = 100 * (sum(Cultured == &quot;Yes&quot;) / n()),
       SAGs.1 = sum(GOLD.Analysis.Project.Type == &quot;Single Cell Analysis (screened)&quot;),
@@ -194,12 +202,9 @@ create_summary_table &lt;- function(df){
                          &quot;Cyanobacteria&quot;,
                          &quot;Chloroflexi&quot;,
                          &quot;Planctomycetes&quot;,
-                         &quot;Verrucomicrobia&quot;,
                          &quot;Deferribacteres&quot;,
-                         &quot;Gemmatimonadetes&quot;,
                          &quot;Marinimicrobia&quot;,
                          &quot;Thermotogae&quot;,
-                         &quot;Nitrospinae&quot;,
                          &quot;Nitrospirae&quot;)
            )
   return(table)

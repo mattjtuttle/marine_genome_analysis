@@ -24,10 +24,17 @@ The following scripts are for creating a data summary table that gives an overvi
 
 # Imports the entire queried dataset
 all_genome_data <- read.csv("../data/genome_list.csv", header = TRUE) %>%
+  
+  # Changes headers for some columns
   rename(Genome.ID = IMG.Genome.ID,
          Genome.Size = Genome.Size.....assembled,
          Scaffold.Count = Scaffold.Count.....assembled) %>%
-  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)") # Removes all SAGs that were not contamination screened
+  
+  # Removes all SAGs that were not contamination screened
+  filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
+  
+# Changes names of phyla to remove "Candidatus"
+all_genome_data$Phylum[all_genome_data$Phylum %in% "Candidatus Marinimicrobia"] <- "Marinimicrobia"
 
 # Imports various VirSorter outputs
 all_refseq_by_genome_cat13 <- read.csv("../tables/all_refseq_by_genome.csv", header = TRUE) %>%
@@ -63,6 +70,7 @@ create_summary_table <- function(df){
   table <- df %>%
     group_by(Phylum) %>%
     summarise(
+      Number.of.genomes = n(),
       Percent.Complete.Genomes = 100 * (sum(Status == "Finished") / n()),
       Percent.Cultured.Genomes = 100 * (sum(Cultured == "Yes") / n()),
       SAGs.1 = sum(GOLD.Analysis.Project.Type == "Single Cell Analysis (screened)"),
@@ -90,12 +98,9 @@ create_summary_table <- function(df){
                          "Cyanobacteria",
                          "Chloroflexi",
                          "Planctomycetes",
-                         "Verrucomicrobia",
                          "Deferribacteres",
-                         "Gemmatimonadetes",
                          "Marinimicrobia",
                          "Thermotogae",
-                         "Nitrospinae",
                          "Nitrospirae")
            )
   return(table)

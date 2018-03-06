@@ -1,9 +1,9 @@
 "Class","RefSeq.Genomes","Viromes.Genomes","Dataset.Genomes","RefSeq.Percent","Viromes.Percent"
-"Gammaproteobacteria",69,68,403,17.12158808933,16.8734491315136
-"Alphaproteobacteria",32,35,189,16.9312169312169,18.5185185185185
-"Deltaproteobacteria",9,9,79,11.3924050632911,11.3924050632911
+"Gammaproteobacteria",85,84,403,21.0918114143921,20.8436724565757
+"Alphaproteobacteria",34,38,189,17.989417989418,20.1058201058201
+"Deltaproteobacteria",10,11,79,12.6582278481013,13.9240506329114
+"Acidithiobacillia",2,2,3,66.6666666666667,66.6666666666667
 "Epsilonproteobacteria",2,2,35,5.71428571428571,5.71428571428571
 "Betaproteobacteria",1,1,11,9.09090909090909,9.09090909090909
-"Acidithiobacillia",0,0,3,0,0
 "unclassified",0,0,3,0,0
 "Zetaproteobacteria",0,0,2,0,0

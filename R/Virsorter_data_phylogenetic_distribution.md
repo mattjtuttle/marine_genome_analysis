@@ -1,30 +1,20 @@
----
-title: "RefSeq data plotting"
-author: "Matt Tuttle"
-date: "`r Sys.Date()`"
-output:
-  html_document:
-    keep_md: TRUE
-  html_notebook: default
----
+# RefSeq data phylogenetic distribution
+Matt Tuttle  
+`r Sys.Date()`  
 
-```{r, include = FALSE}
 
-library(tidyverse)
-
-```
 
 ## Data information
 
-The following code imports processed data from the tables folder for using in making plots to visualize the data. To see how the data was processed, see `Virsorter_data_analysis.Rmd`.
+The following code imports processed data from the tables folder to make tables showning the phylogenetic distribution of prophage hosts. To see how the data was processed, see `Virsorter_data_analysis.Rmd`.
 
-```{r}
 
+```r
 # Imports RefSeq data at the genome level from the tables folder
-refseq_by_genome <- read.csv("../tables/refseq_by_genome.csv", header = TRUE)
+all_refseq_by_genome <- read.csv("../tables/all_refseq_by_genome.csv", header = TRUE)
 
 # Imports Viromes data at the genome level from the tables folder
-viromes_by_genome <- read.csv("../tables/viromes_by_genome.csv", header = TRUE)
+all_viromes_by_genome <- read.csv("../tables/all_viromes_by_genome.csv", header = TRUE)
 
 # Imports genomic metadata
 genome_metadata <- read.csv("../data/genome_list.csv", header = TRUE) %>%
@@ -32,24 +22,21 @@ genome_metadata <- read.csv("../data/genome_list.csv", header = TRUE) %>%
   filter(GOLD.Analysis.Project.Type != "Single Cell Analysis (unscreened)")
 
 # Imports RefSeq data at the prophage level
-refseq_by_prophage <- read.csv("../tables/refseq_by_prophage.csv", header = TRUE)
+all_refseq_by_prophage <- read.csv("../tables/all_refseq_by_prophage.csv", header = TRUE)
 
 # Imports Viromes data at the prophage level
-viromes_by_prophage <- read.csv("../tables/viromes_by_prophage.csv", header = TRUE)
-
-
+all_viromes_by_prophage <- read.csv("../tables/all_viromes_by_prophage.csv", header = TRUE)
 ```
 
 ## Phylogenetic distribution of IMG dataset of marine bacterial genomes
 
-```{r}
 
+```r
 # 
 metadata_by_phyla <- genome_metadata %>%
   count(Phylum, sort = TRUE) %>%
   transmute(Phylum,
             Dataset.Genomes = n)
-
 ```
 
 
@@ -57,13 +44,13 @@ metadata_by_phyla <- genome_metadata %>%
 
 This plot compares the phylogenetic distribution of the RefSeq and Viromes datasets at the genome level. It creates a table which is saved to the tables folder as well as creates a plot to visualize differences between the two datasets.
 
-```{r}
 
+```r
 # Selects Genome IDs from all of the genomes for which prophages were predicted
-refseq_IDs <- refseq_by_genome %>%
+refseq_IDs <- all_refseq_by_genome %>%
   select(Genome.ID)
 
-viromes_IDs <- viromes_by_genome %>%
+viromes_IDs <- all_viromes_by_genome %>%
   select(Genome.ID)
 
 # Adds selects metadata from genomes that are predicted to contain prophages
@@ -120,13 +107,12 @@ write.csv(genomes_by_phyla, file = "../tables/genomes_by_phyla.csv", row.names =
 
 # Creates a plot of Refseq data by phylum
 # Creates a plot of Viromes data by phylum
-
 ```
 
 ## Proteobacterial class distribution at the prophage level
 
-```{r}
 
+```r
 # Calculates number of genomes in each proteobacterial class for the overall dataset
 proteo_metadata_by_class <- genome_metadata %>%
   filter(Phylum == "Proteobacteria") %>%
@@ -165,19 +151,18 @@ proteo_genomes_by_class <- proteo_genomes_by_class %>%
 
 # Writes the table to the tables folder
 write.csv(proteo_genomes_by_class, file = "../tables/proteo_genomes_by_class.csv", row.names = FALSE)
-
 ```
 
 
 ## Phylogenetic distribution at the prophage level
 
-```{r}
 
+```r
 # Selects Genome IDs from each prophage that Virsorter predicted
-prophages_refseq_IDs <- refseq_by_prophage %>%
+prophages_refseq_IDs <- all_refseq_by_prophage %>%
   select(Genome.ID)
 
-prophages_viromes_IDs <- viromes_by_prophage %>%
+prophages_viromes_IDs <- all_viromes_by_prophage %>%
   select(Genome.ID)
 
 # Adds selects metadata from genomes that are predicted to contain prophages
@@ -219,11 +204,5 @@ viromes_prophages_by_phyla <- viromes_prophages_distribution %>%
 prophages_by_phyla <- full_join(refseq_prophages_by_phyla, viromes_prophages_by_phyla, by = "Phylum")
 
 write.csv(prophages_by_phyla, file = "../tables/prophages_by_phyla.csv", row.names = FALSE)
-
-
-# Creates a plot of Refseq data by phylum
-# Creates a plot of Viromes data by phylum
-
-
 ```
 

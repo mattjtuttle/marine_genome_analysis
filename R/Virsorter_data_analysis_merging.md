@@ -8,7 +8,18 @@ July 11, 2017
 
 The following scripts are for merging the category 1-3 (entirely viral) and category 4-6 (detected prophage) outputs of the RefSeq and Viromes VirSorter analyses. The two separate categories are being combined since our dataset contains SAGs and highly fragmented genome sequences which have the potential to hit as being entirely viral as opposed to prophages when using VirSorter.
 
+#### Note
+
+Warnings with the `bind_rows()` function below are to be expected. This is due to the fact that the tables being joined do not have the same levels for several of the columns that are classified as factor. In order to combine the tables, R converts the levels to characters and gives a warning in case we did not want this to occur. This change does not affect the data in the resulting tables.
+
 ## VirSorter output by prophage
+
+
+```r
+# Imports genomic data for sorting out prophages belonging to phyla of interest
+genome_id_phylum <- read.csv("../tables/formatted_genome_list.csv", header = TRUE) %>%
+  select(Genome.ID, Phylum)
+```
 
 RefSeq:
 
@@ -20,7 +31,27 @@ pro_refseq_by_prophage <- read.csv("../tables/refseq_by_prophage.csv", header = 
 
 # Joins the two dataset together
 all_refseq_by_prophage <- bind_rows(pro_refseq_by_prophage, vir_refseq_by_prophage) %>%
-  arrange(Category, Contig_id)
+  arrange(Category, Contig_id) %>%
+  
+  # Adds phylum data to detected prophages so that we can look for phyla of interest
+  left_join(genome_id_phylum, by = "Genome.ID") %>%
+  
+  # Selects phyla for which there were at least 10 genomes queried
+  filter(Phylum %in% c("Firmicutes",
+                       "Proteobacteria",
+                       "Actinobacteria",
+                       "Bacteroidetes",
+                       "Cyanobacteria",
+                       "Chloroflexi",
+                       "Planctomycetes",
+                       "Deferribacteres",
+                       "Marinimicrobia",
+                       "Thermotogae",
+                       "Nitrospirae")
+         ) %>%
+  
+  # Removes phylum data from table
+  select(-Phylum)
 ```
 
 ```
@@ -60,7 +91,27 @@ pro_viromes_by_prophage <- read.csv("../tables/viromes_by_prophage.csv", header 
 
 # Joins the two dataset together
 all_viromes_by_prophage <- bind_rows(pro_viromes_by_prophage, vir_viromes_by_prophage) %>%
-  arrange(Category, Contig_id)
+  arrange(Category, Contig_id) %>%
+  
+  # Adds phylum data to detected prophages so that we can look for phyla of interest
+  left_join(genome_id_phylum, by = "Genome.ID") %>%
+  
+  # Selects phyla for which there were at least 10 genomes queried
+  filter(Phylum %in% c("Firmicutes",
+                       "Proteobacteria",
+                       "Actinobacteria",
+                       "Bacteroidetes",
+                       "Cyanobacteria",
+                       "Chloroflexi",
+                       "Planctomycetes",
+                       "Deferribacteres",
+                       "Marinimicrobia",
+                       "Thermotogae",
+                       "Nitrospirae")
+         ) %>%
+  
+  # Removes phylum data from table
+  select(-Phylum)
 ```
 
 ```
